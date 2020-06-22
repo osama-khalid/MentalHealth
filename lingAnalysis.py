@@ -24,28 +24,33 @@ userExit={}
 #List of Subreddits 
 SubList=['depression','bipolarreddit','mentalhealth','SuicideWatch','StopSelfHarm','EatingDisorder','selfanxiety','anxiety']
 
+
+X=0
 for d in filterFile:
     #print File Name
+    X=X+1
+    if X>11:
+        break
     print(d)
     #Open File as pickle
     file=pkl.load(open(d,"rb"))
     #iterating over the files
     for index, row in file.iterrows():
-        user=row.author   # or user=row['author']
-
-        #If a user is not in the dictionary userEnter, add them
-        if user not in userEnter:
-            #initialize empty dictionary
-            userEnter[user]={}
-        #If a user is not in the dictionary userExit, add them        
-        if user not in userExit:
-            #initialize empty dictionary
-            userExit[user]={}
-
+       
         subreddit=row.subreddit
         #Check if subreddit is a mental health subreddit
         if subreddit in SubList:
-        
+            user=row.author   # or user=row['author']
+
+            #If a user is not in the dictionary userEnter, add them
+            if user not in userEnter:
+                #initialize empty dictionary
+                userEnter[user]={}
+            #If a user is not in the dictionary userExit, add them        
+            if user not in userExit:
+                #initialize empty dictionary
+                userExit[user]={}
+
             #if subreddit is not in dictionary, add it
             if subreddit not in userEnter[user]:
                 userEnter[user][subreddit]=row.created_utc
@@ -62,3 +67,13 @@ for d in filterFile:
                 
                 
 #Find the global min/max time for each user                
+users={}            #users[username][min,max]
+for u in userExit:
+    if u not in users:
+        users[u]=[float('inf'),0]
+    for com in userEnter[u]:
+        if int(userEnter[u][com])<users[u][0]:
+            users[u][0]=int(userEnter[u][com])
+    for com in userExit[u]:
+        if int(userExit[u][com])>users[u][1]:
+            users[u][1]=int(userExit[u][com])
