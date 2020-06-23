@@ -99,7 +99,7 @@ secondsYear=31536000    #Seconds in year
 validUsers={}
 for u in users:
     if (users[u][1]-users[u][0])>(secondsYear/4):   #If user's MH lifespan is more than 6 months
-        if userCount[u]>10:#if user has posted more than 10 times
+        if userCount[u]>5:#if user has posted more than 10 times
             validUsers[u]=users[u]
             
             
