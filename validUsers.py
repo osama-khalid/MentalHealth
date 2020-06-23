@@ -104,5 +104,5 @@ for u in users:
             
             
 file=open('userList','w')
-for v in validUser:
-    file.write(v+','+userFirst[v]+','+userLast[v]+','+validUser[0]+','+validUser[1]+'\n')
+for v in validUsers:
+    file.write(v+','+userFirst[v]+','+userLast[v]+','+validUsers[0]+','+validUsers[1]+'\n')
