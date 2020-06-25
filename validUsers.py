@@ -4,14 +4,26 @@ Creates List of Vaid Users of the form
 UserName,First_Post,Last_Post,StartofIntervention,EndofIntervention
 '''
 #Get list of Files
-files=os.listdir('./')
+commentFile='./Comments/'
+files=os.listdir(commentFile)
 
 #Filter out all files that do not end with '.AllUser'
 
-filterFile=[]
+filterFileComm=[]
 for f in files:
     if f.endswith('.AllUser'):
-        filterFile.append(f)
+        filterFileComm.append(commentFile+f)
+        
+postFile='./Posts/'
+files=os.listdir(postFile)
+
+#Filter out all files that do not end with '.AllUser'
+
+filterFilePost=[]
+for f in files:
+    if f.endswith('.AllPosts'):
+        filterFilePost.append(postFile+f)
+            
     
 #Iterating over files
 import pickle as pkl
@@ -31,7 +43,7 @@ SubList=['depression','bipolarreddit','mentalhealth','SuicideWatch','StopSelfHar
 userCount={}
 userFirst={}
 userLast={}
-for d in filterFile:
+for d in filterFileComm:
     #print File Name
 
     print(d)
@@ -83,6 +95,62 @@ for d in filterFile:
                 userCount[user]=0
             userCount[user]=userCount[user]+1
 #Find the global min/max time for each user                
+
+
+for d in filterFilePost:
+    #print File Name
+
+    print(d)
+    #Open File as pickle
+    file=pkl.load(open(d,"rb"))
+    #iterating over the files
+    for index, row in file.iterrows():
+        user=row.author   # or user=row['author']
+        if user not in userFirst:
+            userFirst[user]=row.created_utc
+        if user not in userLast:
+            userLast[user]=row.created_utc
+        if row.created_utc<userFirst[user]:
+            userFirst[user]=row.created_utc
+        if row.created_utc>userLast[user]:
+            userLast[user]=row.created_utc
+        subreddit=row.subreddit
+        #Check if subreddit is a mental health subreddit
+        if subreddit in SubList:
+            
+            
+
+            #If a user is not in the dictionary userEnter, add them
+            if user not in userEnter:
+                #initialize empty dictionary
+                userEnter[user]={}
+            #If a user is not in the dictionary userExit, add them        
+            if user not in userExit:
+                #initialize empty dictionary
+                userExit[user]={}
+
+            #if subreddit is not in dictionary, add it
+            if subreddit not in userEnter[user]:
+                userEnter[user][subreddit]=row.created_utc
+            if subreddit not in userExit[user]:
+                userExit[user][subreddit]=row.created_utc
+        
+            #if current time is less than min time, update
+            if row.created_utc < userEnter[user][subreddit]:
+                userEnter[user][subreddit]=row.created_utc
+                
+            #if current time is greater than max time, update
+            if row.created_utc < userExit[user][subreddit]:
+                userExit[user][subreddit]=row.created_utc    
+                
+                
+            #Counting number of posts in MH community by user    
+            if user not in userCount:
+                userCount[user]=0
+            userCount[user]=userCount[user]+1
+#Find the global min/max time for each user                
+
+
 users={}            #users[username][min,max]
 for u in userExit:
     if u not in users:
@@ -105,4 +173,4 @@ for u in users:
             
 file=open('userList','w')
 for v in validUsers:
-    file.write(v+','+userFirst[v]+','+userLast[v]+','+validUsers[0]+','+validUsers[1]+'\n')
+    file.write(v+','+str(userFirst[v])+','+str(userLast[v])+','+str(validUsers[0])+','+str(validUsers[1])+'\n')
