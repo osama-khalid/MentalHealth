@@ -86,7 +86,7 @@ for d in filterFileComm:
                 userEnter[user][subreddit]=row.created_utc
                 
             #if current time is greater than max time, update
-            if row.created_utc < userExit[user][subreddit]:
+            if row.created_utc > userExit[user][subreddit]:
                 userExit[user][subreddit]=row.created_utc    
                 
                 
@@ -140,7 +140,7 @@ for d in filterFilePost:
                 userEnter[user][subreddit]=row.created_utc
                 
             #if current time is greater than max time, update
-            if row.created_utc < userExit[user][subreddit]:
+            if row.created_utc > userExit[user][subreddit]:
                 userExit[user][subreddit]=row.created_utc    
                 
                 
@@ -166,11 +166,12 @@ secondsYear=31536000    #Seconds in year
 #Get users who have posted for more than six months
 validUsers={}
 for u in users:
-    if (users[u][1]-users[u][0])>(secondsYear/4):   #If user's MH lifespan is more than 6 months
-        if userCount[u]>5:#if user has posted more than 10 times
+    if (users[u][1]-users[u][0])>(secondsYear/2):   #If user's MH lifespan is more than 6 months
+        if userCount[u]>10:#if user has posted more than 10 times
             validUsers[u]=users[u]
             
             
 file=open('userList','w')
 for v in validUsers:
-    file.write(v+','+str(userFirst[v])+','+str(userLast[v])+','+str(validUsers[0])+','+str(validUsers[1])+'\n')
+    if userFirst[v]!=validUsers[v][0]:
+        file.write(v+','+str(userFirst[v])+','+str(userLast[v])+','+str(validUsers[v][0])+','+str(validUsers[v][1])+'\n')
